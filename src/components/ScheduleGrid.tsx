@@ -1,0 +1,118 @@
+import React, { useEffect, useState } from "react";
+import ClassCard from "./ClassCard";
+import type { FilterOption } from "../types";
+import type { PoleClass } from "../types";
+
+const SHEET_URL = import.meta.env.VITE_GOOGLE_SHEET_URL;
+const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+type Props = {
+  filter: FilterOption;
+};
+
+function ScheduleGrid({ filter }: Props) {
+  const [schedule, setSchedule] = useState<PoleClass[]>([]);
+  const [times, setTimes] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch(SHEET_URL)
+      .then((res) => res.text())
+      .then((csv) => {
+        
+        // Parse CSV data
+        const lines = csv.split("\n").slice(1); // skip header
+        const parsed: PoleClass[] = [];
+        const timeSet = new Set<string>();
+
+        lines.forEach((line) => {
+          const [day, time, type, instructor] = line.split(",");
+          if (day && time && type && instructor) {
+            parsed.push({
+              day: day.trim(),
+              time: time.trim(),
+              type: type.trim() as PoleClass["type"],
+              instructor: instructor.trim()
+            });
+            timeSet.add(time.trim());
+          }
+        });
+
+        setSchedule(parsed);
+
+        // Extract unique sorted times
+        const sortedTimes = Array.from(timeSet).sort((a, b) => {
+
+          // Convert to 24-hour format if needed
+          const convertTo24Hr = (time: string) => {
+            const [hour, minute] = time.split(":");
+            const isPM = time.toLowerCase().includes("pm");
+            let newHour = parseInt(hour, 10);
+            if (isPM && newHour < 12) newHour += 12; //
+            if (!isPM && newHour === 12) newHour = 0; // Convert 12 AM to 0
+            return `${newHour.toString().padStart(2, "0")}:${minute}`;
+          };
+          a = convertTo24Hr(a);
+          b = convertTo24Hr(b);
+
+          // Sort by time in 24-hour format
+          // This assumes times are in HH:MM format, e.g., "10:00 AM", "2:30 PM"
+          // Adjust the regex if your time format is different
+          // Example: "10:00 AM" -> "10:00", "2:30 PM" -> "14:30" 
+          // Optional: Sort by time using Date
+          const parseTime = (t: string) => new Date(`1970-01-01T${t.replace(" ", "")}`);
+          return parseTime(a).getTime() - parseTime(b).getTime();
+        });
+
+        setTimes(sortedTimes);
+      })
+      .catch((err) => console.error("Failed to load schedule", err));
+  }, []);
+
+  const filteredSchedule =
+    filter === "All" ? schedule : schedule.filter((c) => c.type === filter);
+
+  return (
+    <div className="overflow-x-auto rounded-xl shadow bg-white p-4">
+      <table className="w-full table-fixed border-collapse">
+        <thead>
+          <tr>
+            <th className="w-24"></th>
+            {days.map((day) => (
+              <th key={day} className="p-2">
+                {day}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {times.map((time) => (
+            <tr key={time}>
+              <td className="text-sm font-medium p-2 border">{time}</td>
+              {days.map((day) => {
+                const poleClass = filteredSchedule.find(
+                  (s) => s.day === day && s.time === time
+                );
+                return (
+                  <td key={day + time} className="border p-2 align-top h-24">
+                    {poleClass && (
+                      <ClassCard
+                        poleClass={poleClass}
+                        onClick={() => {
+                          // Navigate to registration form or show modal
+                          window.open("https://google.com/", "_blank");
+                          // Or: open modal, or navigate in-app
+                        }}
+                      />
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default ScheduleGrid;
