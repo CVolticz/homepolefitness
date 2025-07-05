@@ -1,6 +1,7 @@
 export type PoleClass = {
   day: string;
-  time: string;
+  startTime: string;
+  endTime: string;
   type: "Pole Dance" | "Pole Dance Choreography" | "Fitness";
   instructor: string;
 };

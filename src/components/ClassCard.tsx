@@ -19,6 +19,7 @@ function ClassCard({ poleClass, onClick }: Props) {
       onClick={onClick}
     >
         <div className="font-semibold">{poleClass.type}</div>
+        <div className="text-xs text-gray-600 mb-1">{poleClass.startTime} - {poleClass.endTime}</div> {/* Time at top */}
         <div className="text-xs">{poleClass.instructor}</div>
     </div>
   );

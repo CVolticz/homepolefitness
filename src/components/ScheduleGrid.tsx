@@ -25,42 +25,41 @@ function ScheduleGrid({ filter }: Props) {
         const timeSet = new Set<string>();
 
         lines.forEach((line) => {
-          const [day, time, type, instructor] = line.split(",");
-          if (day && time && type && instructor) {
+          const [day, startTime, endTime, type, instructor] = line.split(",");
+          if (day && startTime && endTime && type && instructor) {
             parsed.push({
               day: day.trim(),
-              time: time.trim(),
+              startTime: startTime.trim(),
+              endTime: endTime.trim(),
               type: type.trim() as PoleClass["type"],
               instructor: instructor.trim()
             });
-            timeSet.add(time.trim());
+            timeSet.add(startTime.trim());
           }
-        });
+        })
+        console.log("Parsed schedule:", parsed);
+
 
         setSchedule(parsed);
 
-        // Extract unique sorted times
+        // Convert to 24-hour format if needed
+        const convertTo24Hr = (time: string) => {
+          const [hour, minute] = time.split(":");
+          const isPM = time.toLowerCase().includes("pm");
+          let newHour = parseInt(hour, 10);
+          if (isPM && newHour < 12) newHour += 12; //
+          if (!isPM && newHour === 12) newHour = 0; // Convert 12 AM to 0
+          return `${newHour.toString().padStart(2, "0")}:${minute}`;
+        };
+
         const sortedTimes = Array.from(timeSet).sort((a, b) => {
-
-          // Convert to 24-hour format if needed
-          const convertTo24Hr = (time: string) => {
-            const [hour, minute] = time.split(":");
-            const isPM = time.toLowerCase().includes("pm");
-            let newHour = parseInt(hour, 10);
-            if (isPM && newHour < 12) newHour += 12; //
-            if (!isPM && newHour === 12) newHour = 0; // Convert 12 AM to 0
-            return `${newHour.toString().padStart(2, "0")}:${minute}`;
-          };
-          a = convertTo24Hr(a);
-          b = convertTo24Hr(b);
-
           // Sort by time in 24-hour format
           // This assumes times are in HH:MM format, e.g., "10:00 AM", "2:30 PM"
           // Adjust the regex if your time format is different
           // Example: "10:00 AM" -> "10:00", "2:30 PM" -> "14:30" 
-          // Optional: Sort by time using Date
-          const parseTime = (t: string) => new Date(`1970-01-01T${t.replace(" ", "")}`);
-          return parseTime(a).getTime() - parseTime(b).getTime();
+          const t1 = convertTo24Hr(a);
+          const t2 = convertTo24Hr(b);
+          return t1.localeCompare(t2);
         });
 
         setTimes(sortedTimes);
@@ -90,7 +89,7 @@ function ScheduleGrid({ filter }: Props) {
               <td className="text-sm font-medium p-2 border">{time}</td>
               {days.map((day) => {
                 const poleClass = filteredSchedule.find(
-                  (s) => s.day === day && s.time === time
+                  (s) => s.day === day && s.startTime === time
                 );
                 return (
                   <td key={day + time} className="border p-2 align-top h-24">
