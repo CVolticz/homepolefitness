@@ -1,8 +1,6 @@
 /**
  * Footer component for Home Pole & Fitness
  */
-import React from "react";
-
 
 function Footer() {
   return (

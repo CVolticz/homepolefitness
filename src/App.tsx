@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import ScheduleGrid from "./components/ScheduleGrid";
 import ClassFilter from "./components/ClassFilter";
 import type { FilterOption } from "./types";
@@ -16,8 +16,13 @@ function App() {
         <p className="text-gray-500 max-w-xl mx-auto">
           Join our expert-led Pole Dance classes designed for all levels. Find your perfect practice time and enhance your mind-body connection.
         </p>
+          <a
+            href="https://homepolenfitness.shop/"
+            className="inline-block mt-4 px-5 py-2 bg-white-500 text-white rounded-full hover:bg-blue-600 transition"
+          >
+            Home
+          </a>
       </header>
-
       <ClassFilter activeFilter={filter} setFilter={setFilter} />
       <main className="px-6">
         <ScheduleGrid filter={filter} />

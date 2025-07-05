@@ -1,4 +1,3 @@
-import React from "react";
 import type { PoleClass } from "../types";
 
 const colorMap: Record<PoleClass["type"], string> = {
