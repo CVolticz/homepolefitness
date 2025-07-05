@@ -15,56 +15,66 @@ function ScheduleGrid({ filter }: Props) {
   const [times, setTimes] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch(SHEET_URL)
-      .then((res) => res.text())
-      .then((csv) => {
-        
-        // Parse CSV data
-        const lines = csv.split("\n").slice(1); // skip header
-        const parsed: PoleClass[] = [];
-        const timeSet = new Set<string>();
+    const fetchSchedule = () => {
+      fetch(SHEET_URL)
+        .then((res) => res.text())
+        .then((csv) => {
+          
+          // Parse CSV data
+          const lines = csv.split("\n").slice(1); // skip header
+          const parsed: PoleClass[] = [];
+          const timeSet = new Set<string>();
 
-        lines.forEach((line) => {
-          const [day, startTime, endTime, type, instructor] = line.split(",");
-          if (day && startTime && endTime && type && instructor) {
-            parsed.push({
-              day: day.trim(),
-              startTime: startTime.trim(),
-              endTime: endTime.trim(),
-              type: type.trim() as PoleClass["type"],
-              instructor: instructor.trim()
-            });
-            timeSet.add(startTime.trim());
-          }
+          lines.forEach((line) => {
+            const [day, startTime, endTime, type, instructor] = line.split(",");
+            if (day && startTime && endTime && type && instructor) {
+              parsed.push({
+                day: day.trim(),
+                startTime: startTime.trim(),
+                endTime: endTime.trim(),
+                type: type.trim() as PoleClass["type"],
+                instructor: instructor.trim()
+              });
+              timeSet.add(startTime.trim());
+            }
+          })
+          console.log("Parsed schedule:", parsed);
+
+
+          setSchedule(parsed);
+
+          // Convert to 24-hour format if needed
+          const convertTo24Hr = (time: string) => {
+            const [hour, minute] = time.split(":");
+            const isPM = time.toLowerCase().includes("pm");
+            let newHour = parseInt(hour, 10);
+            if (isPM && newHour < 12) newHour += 12; //
+            if (!isPM && newHour === 12) newHour = 0; // Convert 12 AM to 0
+            return `${newHour.toString().padStart(2, "0")}:${minute}`;
+          };
+
+          const sortedTimes = Array.from(timeSet).sort((a, b) => {
+            // Sort by time in 24-hour format
+            // This assumes times are in HH:MM format, e.g., "10:00 AM", "2:30 PM"
+            // Adjust the regex if your time format is different
+            // Example: "10:00 AM" -> "10:00", "2:30 PM" -> "14:30" 
+            const t1 = convertTo24Hr(a);
+            const t2 = convertTo24Hr(b);
+            return t1.localeCompare(t2);
+          });
+
+          setTimes(sortedTimes);
         })
-        console.log("Parsed schedule:", parsed);
+        .catch((err) => console.error("Failed to load schedule", err));
+    } 
+    fetchSchedule(); // initial fetch
 
+    // Set up interval to refresh schedule every 5 minutes
+    // This is useful if the schedule can change frequently
+    // Adjust the interval as needed
+    const intervalId = setInterval(fetchSchedule, 5 * 60 * 1000); // every 5 minutes
 
-        setSchedule(parsed);
-
-        // Convert to 24-hour format if needed
-        const convertTo24Hr = (time: string) => {
-          const [hour, minute] = time.split(":");
-          const isPM = time.toLowerCase().includes("pm");
-          let newHour = parseInt(hour, 10);
-          if (isPM && newHour < 12) newHour += 12; //
-          if (!isPM && newHour === 12) newHour = 0; // Convert 12 AM to 0
-          return `${newHour.toString().padStart(2, "0")}:${minute}`;
-        };
-
-        const sortedTimes = Array.from(timeSet).sort((a, b) => {
-          // Sort by time in 24-hour format
-          // This assumes times are in HH:MM format, e.g., "10:00 AM", "2:30 PM"
-          // Adjust the regex if your time format is different
-          // Example: "10:00 AM" -> "10:00", "2:30 PM" -> "14:30" 
-          const t1 = convertTo24Hr(a);
-          const t2 = convertTo24Hr(b);
-          return t1.localeCompare(t2);
-        });
-
-        setTimes(sortedTimes);
-      })
-      .catch((err) => console.error("Failed to load schedule", err));
+    return () => clearInterval(intervalId); // cleanup on unmount
   }, []);
 
   const filteredSchedule =
