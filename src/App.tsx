@@ -1,12 +1,14 @@
 // App.tsx
 import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ScheduleGrid from "./components/ScheduleGrid";
 import ClassFilter from "./components/ClassFilter";
+import RegisterPage from "./components/RegisterPage";
 import type { FilterOption } from "./types";
 import Legend from "./components/Legend";
 import Footer from "./components/Footer";
 
-function App() {
+function HomePage() {
   const [filter, setFilter] = useState<FilterOption>("All");
 
   return (
@@ -16,12 +18,12 @@ function App() {
         <p className="text-gray-500 max-w-xl mx-auto">
           Join our expert-led Pole Dance classes designed for all levels. Find your perfect practice time and enhance your mind-body connection.
         </p>
-          <a
-            href="https://homepolenfitness.shop/"
-            className="inline-block mt-4 px-5 py-2 bg-white-500 text-white rounded-full hover:bg-blue-600 transition"
-          >
-            Home
-          </a>
+        <a
+          href="https://homepolenfitness.shop/"
+          className="inline-block mt-4 px-5 py-2 bg-white text-black rounded-full hover:bg-blue-600 transition"
+        >
+          Home
+        </a>
       </header>
       <ClassFilter activeFilter={filter} setFilter={setFilter} />
       <main className="px-6">
@@ -31,6 +33,17 @@ function App() {
       <Footer />
     </div>
   );
-};
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;

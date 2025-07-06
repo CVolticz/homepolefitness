@@ -1,0 +1,41 @@
+<form id="registerForm">
+  <label>Họ và Tên:</label><br>
+  <input type="text" name="HoTen" required><br>
+
+  <label>Số điện thoại:</label><br>
+  <input type="text" name="SoDienThoai" required><br>
+
+  <label>Email:</label><br>
+  <input type="email" name="Email" required><br>
+
+  <label>Ghi chú:</label><br>
+  <textarea name="ClassInfo"></textarea><br><br>
+
+  <button type="submit">Đăng ký ngay</button>
+  <p id="status"></p>
+</form>
+
+<script>
+document.getElementById("registerForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var form = e.target;
+  var data = new FormData(form);
+
+  console.log(data)
+
+  fetch("https://script.google.com/macros/s/AKfycbwwJwt5O1CE_wip5iZ6MzhpJShDXa-w0FRfNgDHF6rS5gL1ObGXNI2FUk83i2Kao4r6lw/exec", {
+    method: "POST",
+    body: data
+  })
+  .then(response => response.text())
+  .then(result => {
+    document.getElementById("status").innerText = result;
+    form.reset();
+  })
+  .catch(error => {
+    document.getElementById("status").innerText = "Có lỗi xảy ra. Vui lòng thử lại.";
+    console.error(error);
+  });
+});
+</script>
+

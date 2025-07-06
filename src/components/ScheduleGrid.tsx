@@ -1,4 +1,9 @@
+/**
+ * ScheduleGrid component to display pole fitness classes in a grid format (filterable by class type)
+ * ScheduleGrid also handle user registration according to selected class card
+ */
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ClassCard from "./ClassCard";
 import type { FilterOption } from "../types";
 import type { PoleClass } from "../types";
@@ -11,6 +16,10 @@ type Props = {
 };
 
 function ScheduleGrid({ filter }: Props) {
+  // enable pagination and navigation
+  const navigate = useNavigate();
+
+  // State to hold the schedule data and times
   const [schedule, setSchedule] = useState<PoleClass[]>([]);
   const [times, setTimes] = useState<string[]>([]);
 
@@ -38,9 +47,6 @@ function ScheduleGrid({ filter }: Props) {
               timeSet.add(startTime.trim());
             }
           })
-          console.log("Parsed schedule:", parsed);
-
-
           setSchedule(parsed);
 
           // Convert to 24-hour format if needed
@@ -107,9 +113,8 @@ function ScheduleGrid({ filter }: Props) {
                       <ClassCard
                         poleClass={poleClass}
                         onClick={() => {
-                          // Navigate to registration form or show modal
-                          window.open("https://google.com/", "_blank");
-                          // Or: open modal, or navigate in-app
+                          // Handle registration logic here, navigate the user to the registration page
+                          navigate(`/register?day=${encodeURIComponent(poleClass.day)}&start=${encodeURIComponent(poleClass.startTime)}&end=${encodeURIComponent(poleClass.endTime)}&type=${encodeURIComponent(poleClass.type)}&instructor=${encodeURIComponent(poleClass.instructor)}`);
                         }}
                       />
                     )}
