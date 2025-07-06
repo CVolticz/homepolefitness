@@ -1,6 +1,7 @@
 import type { PoleClass } from "../types";
 
 const colorMap: Record<PoleClass["type"], string> = {
+  "All": "bg-gray-100 text-gray-800",
   "Pole Dance": "bg-blue-100 text-blue-800",
   "Pole Dance Choreography": "bg-yellow-100 text-yellow-800",
   "Fitness": "bg-purple-100 text-purple-800",
