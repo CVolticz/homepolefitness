@@ -12,7 +12,7 @@ function HomePage() {
   const [filter, setFilter] = useState<FilterOption>("All");
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 font-sans">
+    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
       <header className="text-center py-10">
         <h1 className="text-3xl font-bold mb-2">Weekly Class Schedule</h1>
         <p className="text-gray-500 max-w-xl mx-auto">

@@ -87,7 +87,7 @@ function ScheduleGrid({ filter }: Props) {
     filter === "All" ? schedule : schedule.filter((c) => c.type === filter);
 
   return (
-    <div className="overflow-x-auto rounded-xl shadow bg-white p-4">
+    <div className="container-fluid overflow-x-auto rounded-xl shadow bg-white p-4">
       <table className="w-full table-fixed border-collapse">
         <thead>
           <tr>
