@@ -49,14 +49,10 @@ function ScheduleGrid({ filter }: Props) {
           })
           setSchedule(parsed);
 
-          // Convert to 24-hour format if needed
-          const convertTo24Hr = (time: string) => {
-            const [hour, minute] = time.split(":");
-            const isPM = time.toLowerCase().includes("pm");
-            let newHour = parseInt(hour, 10);
-            if (isPM && newHour < 12) newHour += 12; //
-            if (!isPM && newHour === 12) newHour = 0; // Convert 12 AM to 0
-            return `${newHour.toString().padStart(2, "0")}:${minute}`;
+          // Convert "HH:MM" (e.g., "9:30", "12:30") to minutes since midnight
+          const timeToMinutes = (time: string): number => {
+            const [hours, minutes] = time.split(":").map(Number);
+            return hours * 60 + minutes;
           };
 
           const sortedTimes = Array.from(timeSet).sort((a, b) => {
@@ -64,9 +60,8 @@ function ScheduleGrid({ filter }: Props) {
             // This assumes times are in HH:MM format, e.g., "10:00 AM", "2:30 PM"
             // Adjust the regex if your time format is different
             // Example: "10:00 AM" -> "10:00", "2:30 PM" -> "14:30" 
-            const t1 = convertTo24Hr(a);
-            const t2 = convertTo24Hr(b);
-            return t1.localeCompare(t2);
+            return timeToMinutes(a) - timeToMinutes(b);
+
           });
 
           setTimes(sortedTimes);
