@@ -50,9 +50,14 @@ function RegisterPage() {
         <div className="container-fluid">
             <div className="flex flex-col justify-center p-6 max-w-md mx-auto">
                 <h2 className="text-2xl font-bold mb-4">Register for Class</h2>
-                <a className="inline-block mt-4 px-5 py-2 bg-white text-black rounded-full hover:bg-blue-600 transition"
+                <div className="flex flex-wrap justify-between items-center mb-4">
+                    <a className="inline-block mt-4 px-5 py-2 bg-white text-black rounded-full hover:bg-blue-600 transition"
                     href="https://homepolenfitness.shop/"
-                > Home Page </a>
+                    > Home Page </a>
+                    <a className="inline-block mt-4 px-5 py-2 bg-white text-black rounded-full hover:bg-blue-600 transition"
+                     href="https://homepolefitness.vercel.app/"
+                    > Schedule </a>
+                </div>
                 <div className="space-y-2 text-sm mb-4">
                     <p><strong>Type:</strong> {type}</p>
                     <p><strong>Instructor:</strong> {instructor}</p>
