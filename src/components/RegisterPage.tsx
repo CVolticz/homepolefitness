@@ -39,16 +39,12 @@ function RegisterPage() {
             body: JSON.stringify(data)
         });
         console.log("Response from Google Sheet Script:", response);
-        if (response.status === 200) { 
-            setStatus("success");
-            //   e.currentTarget.reset();
-        } else {
-            setStatus("error");}
-        } catch (error) {
-            console.error("Error submitting form", error);
-            setStatus("error");
-        }
-    };
+        setStatus("success");
+        //   e.currentTarget.reset();
+    } catch (error) {
+        console.error("Error submitting form", error);
+        setStatus("error");
+    }};
 
     return (
         <div className="container justify-center p-6 max-w-md mx-auto">
